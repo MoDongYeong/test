@@ -1,0 +1,52 @@
+function BuNomalAutoTarget () {
+    while (!Player.Dead()) {
+        Orion.Ignore('self');       
+        var creatures = Orion.FindType("any", "any", ground, "near|live|ignoreself|ignorefriends", 15, 'gray|red|orange|criminal|enemy');
+        if (!creatures.length) {
+           Orion.CloseStatusbar(lasttarget);
+            Orion.CharPrint(self, Orion.Random(0, 100), "** No Enemy **");
+            Orion.IgnoreReset();
+            Orion.Wait(500);
+        } else {
+            Orion.RemoveObject("target");
+            Orion.AddObject("target", creatures[0]);
+            var target = Orion.FindObject("target");
+            Orion.ClientLastTarget(creatures[0]);
+            Orion.TargetSystemSerial(creatures[0]);
+           
+            // InvokeVirtue
+            if (target.Hits("%") == 100) {
+                Orion.WaitTargetObject("target");
+                Orion.CharPrint(self, Orion.Random(0, 100), "Hono"); 
+                Orion.InvokeVirture('Honor');
+            }
+            // Attack
+            Orion.Attack("target");
+            Orion.CharPrint(self, Orion.Random(0, 100), "Attack"); 
+            Orion.Wait(500);      
+            //Consecrate            
+            if(Orion.BuffExists('Consecrate Weapon')==false){
+                Orion.Cast('Consecrate Weapon',self);
+                Orion.CharPrint(self, Orion.Random(0, 100), "*Consecrate Weapon*"); 
+                Orion.Wait(castSpellDelay);
+                }
+            //Bushido Stance
+            if(Orion.BuffExists('Confidence')==false){
+                Orion.Cast('Confidence',self);
+                Orion.CharPrint(self, Orion.Random(0, 100), "*Confidence*"); 
+                Orion.Wait(castSpellDelay);
+            }else if(Orion.BuffExists('Counter Attack')==false){
+                Orion.Cast('Counter Attack',target);
+                Orion.CharPrint(self, Orion.Random(0, 100), "*Counter Attack*"); 
+                Orion.Wait(castSpellDelay);
+                }
+            // OnSlaught      
+            if(Orion.Timer('OnslaughtTimer')>6000){
+                Orion.CharPrint(self, Orion.Random(0, 100), "*Onslaught*"); 
+                Orion.Cast('Onslaught',target);
+                var OnsalughtTimer = Orion.SetTimer('Onslaught')
+                Orion.Wait(castSpellDelay);
+            }
+        }
+    }
+}
